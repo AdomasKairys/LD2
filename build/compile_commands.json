@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/adomas/LD2_mpi/build",
-  "command": "/usr/bin/g++  -I/usr/lib/x86_64-linux-gnu/openmpi/include -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -g -o CMakeFiles/LD2.dir/main.cpp.o -c /home/adomas/LD2_mpi/main.cpp",
-  "file": "/home/adomas/LD2_mpi/main.cpp"
-}
-]

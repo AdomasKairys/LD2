@@ -1,1 +1,0 @@
-/usr/bin/g++ -g CMakeFiles/LD2.dir/main.cpp.o -o LD2 
