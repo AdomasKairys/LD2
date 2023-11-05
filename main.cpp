@@ -9,6 +9,7 @@ int main(){
     auto totalProcesses = MPI::COMM_WORLD.Get_size();
     if (totalProcesses < 3){
         std::cout << "need to have more than 3 proc" << std::endl;
+        MPI::Finalize();
         return -1;
     }
     switch (rank)
