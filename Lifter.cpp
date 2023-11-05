@@ -9,7 +9,6 @@ Lifter::Lifter()
 	this->weightClass = 0;
 	this->total = 0;
 	this->hash = "";
-	this->isEmpty = true;
 }
 
 Lifter::Lifter(string name, int weightClass, double total)
@@ -18,7 +17,6 @@ Lifter::Lifter(string name, int weightClass, double total)
 	this->weightClass = weightClass;
 	this->total = total;
 	this->hash = "";
-	this->isEmpty = false;
 }
 
 //https://github.com/System-Glitch/SHA256

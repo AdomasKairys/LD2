@@ -6,19 +6,21 @@
 #include <vector>
 #include "Lifter.h"
 #include "json.hpp"
+#include "SHA256.h"
 
 using json = nlohmann::json; 
 using namespace std;
 
-const int ROOT_PROCESS = 0;
-const int DATA_PROCESS = 1;
-const int RESULT_PROCESS = 2;
-const int TAG_WEIGHT_CLASS = 0;
-const int TAG_TOTAL = 1;
-const int TAG_NAME = 2;
+const size_t DATA_ARRAY_SIZE = 10;
+const size_t ROOT_PROCESS = 0;
+const size_t DATA_PROCESS = 1;
+const size_t RESULT_PROCESS = 2;
+const size_t TAG_DATA = 0;
+const size_t TAG_REQUEST = 1;
+const size_t TAG_DATA_REMAINING = 2;
 
 vector<Lifter> read_lifters_from_file(const string& filePath);
-void data_proccess_task(Lifter (&proccessArray)[],  size_t* startIndex, size_t endIndex, const size_t totalProcesses, const size_t arraySize );
+string generateHash(string stringField, int intField, double doubleField);
 
 vector<Lifter> read_lifters_from_file(const string& file_path) {
     vector<Lifter> Lifters;
@@ -31,27 +33,19 @@ vector<Lifter> read_lifters_from_file(const string& file_path) {
     
     return Lifters;
 }
-
-void data_proccess_task(Lifter (&proccessArray)[], size_t* startIndex, size_t endIndex, const size_t totalProcesses, const size_t arraySize)
+//https://github.com/System-Glitch/SHA256
+string generateHash(string str)
 {
-    size_t numOfElements = 0;
-    size_t numOfRemovedElements = 0;
-    if(endIndex == *startIndex)
-        return;
+	SHA256 sha;
+	sha.update(str);
+	uint8_t* digest = sha.digest();
 
-    numOfElements = arraySize-*startIndex;
+	string hash = SHA256::toString(digest).substr(0,10);
 
-    if(endIndex < *startIndex)
-        numOfElements += endIndex;
+	delete[] digest;
 
-    if(numOfElements < (totalProcesses -3))
-        numOfRemovedElements = numOfElements;
-    else
-        numOfRemovedElements = totalProcesses - 3;
-
-    *startIndex = (*startIndex + numOfRemovedElements) % arraySize;
+    return hash;
 }
-
 int main(){
 
     MPI::Init();
@@ -65,54 +59,73 @@ int main(){
         MPI::COMM_WORLD.Abort(1);
     }
 
-    vector<Lifter> lifters;
-    size_t N;
-    if (rank == ROOT_PROCESS){
-        lifters = read_lifters_from_file("IF11_KairysA_LD1_dat2.json");
-        size_t N = lifters.size();
-    }
-    MPI::COMM_WORLD.Bcast(&N, 1, MPI_INT, ROOT_PROCESS);
+    
     switch (rank)
     {
         case ROOT_PROCESS:
         {
-            
+            vector<Lifter> lifters = read_lifters_from_file("IF11_KairysA_LD1_dat2.json");
+            size_t N = lifters.size();  
+            for(size_t i = 0; i < N; i++)
+            {
+                string data = lifters[i].name + to_string(lifters[i].weightClass) + to_string(lifters[i].total);
+                MPI::COMM_WORLD.Send(data.c_str(), data.size(), MPI_CHAR, DATA_PROCESS, TAG_DATA);
+                size_t remaining = N-1-i;
+                MPI::COMM_WORLD.Send(&remaining, 1, MPI_INT, DATA_PROCESS, TAG_DATA_REMAINING);
+            }
             break;
         }
         case DATA_PROCESS:
         {
-            size_t startIndex = 0;
-            size_t endIndex = 0;
-            Lifter processArray[N/2];
-            while (true)
+            string processArray[DATA_ARRAY_SIZE];
+            bool isFinished = false;
+            bool isArrayEmpty = true;
+            while (!isFinished || !isArrayEmpty)
             {
-                if(processArray[endIndex].isEmpty)
+                for(size_t i = 0; i<sizeof(processArray); i++)
                 {
-                    int weightClass;
-                    double total;
-
+                    if(processArray[i] != "")
+                        continue;
+                    
                     MPI::Status status;
-                    MPI::COMM_WORLD.Probe(ROOT_PROCESS, TAG_NAME, status);
+                    MPI::COMM_WORLD.Probe(ROOT_PROCESS, TAG_DATA, status);
 
                     char buffer[status.Get_count(MPI_CHAR)];
-
-                    MPI::COMM_WORLD.Recv(&weightClass, 1, MPI_INT, ROOT_PROCESS, TAG_WEIGHT_CLASS );
-                    MPI::COMM_WORLD.Recv(&total, 1, MPI_DOUBLE, ROOT_PROCESS, TAG_TOTAL );
                     MPI::COMM_WORLD.Recv(&buffer, sizeof(buffer), MPI_CHAR, status.Get_source(), status.Get_tag());
 
-                    string name(buffer);
+                    string data(buffer);
 
-                    processArray[endIndex] = Lifter(name, weightClass, total);
-
-                    size_t _endIndex = (endIndex+1)%sizeof(processArray);
-                    if(_endIndex != startIndex)
-                        endIndex = _endIndex;
+                    processArray[i] = data;
                 }
 
-                data_proccess_task(processArray, &startIndex, endIndex, totalProcesses, sizeof(processArray));
+                MPI::Status status;
+                MPI::COMM_WORLD.Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, TAG_REQUEST, status);
+
+                size_t remaining;
+                MPI::COMM_WORLD.Recv(&remaining, 1, MPI_INT, DATA_PROCESS, TAG_DATA_REMAINING);
+                isFinished = remaining == 0;
+
+                size_t index = 0;
+                isArrayEmpty = true;
+
+                for(size_t i = 0; i<sizeof(processArray); i++)
+                {
+                    if(processArray[i] == "")
+                        continue;
+                    isArrayEmpty = false;
+                    index = i;
+                    break;
+                }
+                int response = isArrayEmpty && isFinished ? -1 : (isArrayEmpty ? 0 : 1); // -1 means finished and no more data, 0 means no more data currently, 1 mean data is available
 
 
-                break;
+                MPI::COMM_WORLD.Send(&response, 1, MPI_INT, status.Get_source(), status.Get_tag());
+
+                if(response == 1)
+                {
+                    const char* data = processArray[index].c_str();
+                    MPI::COMM_WORLD.Send(data, strlen(data), MPI_CHAR, status.Get_source(), status.Get_tag());
+                }
 
             }
         }
