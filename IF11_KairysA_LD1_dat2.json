@@ -1,0 +1,604 @@
+{
+  "wlifter": [
+    {
+      "gender": "male",
+      "name": "Mclean Barber",
+      "weightClass": 55,
+      "total": 230.14
+    },
+    {
+      "gender": "male",
+      "name": "Rhodes Cummings",
+      "weightClass": 96,
+      "total": 324.35
+    },
+    {
+      "gender": "male",
+      "name": "Neal Tate",
+      "weightClass": 81,
+      "total": 292.29
+    },
+    {
+      "gender": "male",
+      "name": "Wilkerson Bowers",
+      "weightClass": 61,
+      "total": 228.55
+    },
+    {
+      "gender": "male",
+      "name": "Houston Joseph",
+      "weightClass": 73,
+      "total": 243.52
+    },
+    {
+      "gender": "female",
+      "name": "Daisy Goodwin",
+      "weightClass": 59,
+      "total": 300.88
+    },
+    {
+      "gender": "female",
+      "name": "Mayra Sloan",
+      "weightClass": 49,
+      "total": 250.84
+    },
+    {
+      "gender": "female",
+      "name": "Zelma Frederick",
+      "weightClass": 55,
+      "total": 258.51
+    },
+    {
+      "gender": "female",
+      "name": "Stella Lee",
+      "weightClass": 64,
+      "total": 331.49
+    },
+    {
+      "gender": "male",
+      "name": "Lane Meyer",
+      "weightClass": 81,
+      "total": 341.88
+    },
+    {
+      "gender": "male",
+      "name": "Owen Mcgee",
+      "weightClass": 102,
+      "total": 413.07
+    },
+    {
+      "gender": "female",
+      "name": "Petra Greene",
+      "weightClass": 81,
+      "total": 378.98
+    },
+    {
+      "gender": "female",
+      "name": "Tracey Noel",
+      "weightClass": 55,
+      "total": 234.83
+    },
+    {
+      "gender": "female",
+      "name": "Mari Cross",
+      "weightClass": 76,
+      "total": 344.17
+    },
+    {
+      "gender": "female",
+      "name": "Patsy Moore",
+      "weightClass": 64,
+      "total": 272.11
+    },
+    {
+      "gender": "male",
+      "name": "Browning Chandler",
+      "weightClass": 67,
+      "total": 260.32
+    },
+    {
+      "gender": "female",
+      "name": "Randi Weaver",
+      "weightClass": 81,
+      "total": 396.85
+    },
+    {
+      "gender": "male",
+      "name": "Santiago Bentley",
+      "weightClass": 102,
+      "total": 330.74
+    },
+    {
+      "gender": "female",
+      "name": "Mallory Chan",
+      "weightClass": 55,
+      "total": 252.23
+    },
+    {
+      "gender": "female",
+      "name": "Reba White",
+      "weightClass": 45,
+      "total": 234.34
+    },
+    {
+      "gender": "female",
+      "name": "Bobbi Phillips",
+      "weightClass": 55,
+      "total": 247.24
+    },
+    {
+      "gender": "male",
+      "name": "Hughes Bush",
+      "weightClass": 96,
+      "total": 324.63
+    },
+    {
+      "gender": "male",
+      "name": "Molina Wooten",
+      "weightClass": 102,
+      "total": 361.51
+    },
+    {
+      "gender": "male",
+      "name": "Hinton Short",
+      "weightClass": 67,
+      "total": 272.12
+    },
+    {
+      "gender": "male",
+      "name": "Mcfadden Soto",
+      "weightClass": 67,
+      "total": 214.67
+    },
+    {
+      "gender": "female",
+      "name": "Francesca Maldonado",
+      "weightClass": 81,
+      "total": 405.03
+    },
+    {
+      "gender": "male",
+      "name": "Wilkinson Barron",
+      "weightClass": 96,
+      "total": 358.88
+    },
+    {
+      "gender": "male",
+      "name": "Bray Cervantes",
+      "weightClass": 102,
+      "total": 405.38
+    },
+    {
+      "gender": "male",
+      "name": "Mercado Blair",
+      "weightClass": 55,
+      "total": 206.91
+    },
+    {
+      "gender": "female",
+      "name": "Meagan Leon",
+      "weightClass": 55,
+      "total": 250.53
+    },
+    {
+      "gender": "female",
+      "name": "Rowena Jacobs",
+      "weightClass": 64,
+      "total": 272.06
+    },
+    {
+      "gender": "male",
+      "name": "Delacruz Daniels",
+      "weightClass": 89,
+      "total": 372.26
+    },
+    {
+      "gender": "female",
+      "name": "Sandy Merrill",
+      "weightClass": 76,
+      "total": 362.02
+    },
+    {
+      "gender": "male",
+      "name": "Finch Knox",
+      "weightClass": 96,
+      "total": 332.04
+    },
+    {
+      "gender": "female",
+      "name": "Shawna Good",
+      "weightClass": 76,
+      "total": 338.49
+    },
+    {
+      "gender": "male",
+      "name": "Fleming Macdonald",
+      "weightClass": 55,
+      "total": 179.95
+    },
+    {
+      "gender": "male",
+      "name": "Wade Rose",
+      "weightClass": 89,
+      "total": 382.43
+    },
+    {
+      "gender": "female",
+      "name": "Anna Riggs",
+      "weightClass": 64,
+      "total": 308.05
+    },
+    {
+      "gender": "male",
+      "name": "Sanford Wiley",
+      "weightClass": 67,
+      "total": 265.97
+    },
+    {
+      "gender": "female",
+      "name": "Susanne Swanson",
+      "weightClass": 49,
+      "total": 224.38
+    },
+    {
+      "gender": "female",
+      "name": "Stefanie Knowles",
+      "weightClass": 81,
+      "total": 386.66
+    },
+    {
+      "gender": "female",
+      "name": "Penelope Charles",
+      "weightClass": 87,
+      "total": 428.86
+    },
+    {
+      "gender": "male",
+      "name": "Gordon Burnett",
+      "weightClass": 73,
+      "total": 304.42
+    },
+    {
+      "gender": "female",
+      "name": "Olivia Hewitt",
+      "weightClass": 49,
+      "total": 247.67
+    },
+    {
+      "gender": "male",
+      "name": "Henry Benton",
+      "weightClass": 102,
+      "total": 437.78
+    },
+    {
+      "gender": "female",
+      "name": "Lindsey Petty",
+      "weightClass": 64,
+      "total": 312.57
+    },
+    {
+      "gender": "female",
+      "name": "Joyce Wallace",
+      "weightClass": 45,
+      "total": 227.23
+    },
+    {
+      "gender": "male",
+      "name": "Knapp Ramos",
+      "weightClass": 81,
+      "total": 304.19
+    },
+    {
+      "gender": "male",
+      "name": "Palmer Rowe",
+      "weightClass": 89,
+      "total": 302.83
+    },
+    {
+      "gender": "female",
+      "name": "Glenda Rosa",
+      "weightClass": 71,
+      "total": 317.95
+    },
+    {
+      "gender": "male",
+      "name": "Camacho Tyler",
+      "weightClass": 73,
+      "total": 253.44
+    },
+    {
+      "gender": "male",
+      "name": "Blevins Cantrell",
+      "weightClass": 96,
+      "total": 335.75
+    },
+    {
+      "gender": "male",
+      "name": "Wyatt Serrano",
+      "weightClass": 102,
+      "total": 435.26
+    },
+    {
+      "gender": "female",
+      "name": "Jeannette Edwards",
+      "weightClass": 76,
+      "total": 382.99
+    },
+    {
+      "gender": "female",
+      "name": "Francisca Guerra",
+      "weightClass": 59,
+      "total": 299.63
+    },
+    {
+      "gender": "male",
+      "name": "Lyons Moon",
+      "weightClass": 73,
+      "total": 267.73
+    },
+    {
+      "gender": "male",
+      "name": "Frederick Paul",
+      "weightClass": 67,
+      "total": 234.69
+    },
+    {
+      "gender": "female",
+      "name": "Myrtle Newton",
+      "weightClass": 87,
+      "total": 446.05
+    },
+    {
+      "gender": "male",
+      "name": "Rutledge Rowland",
+      "weightClass": 96,
+      "total": 339.59
+    },
+    {
+      "gender": "female",
+      "name": "Terrie Butler",
+      "weightClass": 55,
+      "total": 259.95
+    },
+    {
+      "gender": "female",
+      "name": "Ericka Hines",
+      "weightClass": 55,
+      "total": 288.75
+    },
+    {
+      "gender": "male",
+      "name": "Valdez Bond",
+      "weightClass": 61,
+      "total": 245.58
+    },
+    {
+      "gender": "female",
+      "name": "Herminia Glover",
+      "weightClass": 45,
+      "total": 202.24
+    },
+    {
+      "gender": "male",
+      "name": "Hammond Schwartz",
+      "weightClass": 81,
+      "total": 276.94
+    },
+    {
+      "gender": "female",
+      "name": "Marta Boone",
+      "weightClass": 81,
+      "total": 386.86
+    },
+    {
+      "gender": "male",
+      "name": "Lynn Hanson",
+      "weightClass": 67,
+      "total": 235.25
+    },
+    {
+      "gender": "male",
+      "name": "Larsen Hartman",
+      "weightClass": 81,
+      "total": 325.81
+    },
+    {
+      "gender": "male",
+      "name": "Compton Wall",
+      "weightClass": 89,
+      "total": 297.76
+    },
+    {
+      "gender": "female",
+      "name": "Rhea Contreras",
+      "weightClass": 71,
+      "total": 332.68
+    },
+    {
+      "gender": "female",
+      "name": "Geneva Larsen",
+      "weightClass": 87,
+      "total": 400.62
+    },
+    {
+      "gender": "male",
+      "name": "Gilmore Lowe",
+      "weightClass": 61,
+      "total": 254.07
+    },
+    {
+      "gender": "female",
+      "name": "Johanna Harvey",
+      "weightClass": 81,
+      "total": 373.55
+    },
+    {
+      "gender": "male",
+      "name": "Cameron Larson",
+      "weightClass": 61,
+      "total": 205.43
+    },
+    {
+      "gender": "female",
+      "name": "Lila Graham",
+      "weightClass": 64,
+      "total": 306.29
+    },
+    {
+      "gender": "female",
+      "name": "Vivian Estes",
+      "weightClass": 87,
+      "total": 414.36
+    },
+    {
+      "gender": "male",
+      "name": "Dean Wynn",
+      "weightClass": 67,
+      "total": 237.38
+    },
+    {
+      "gender": "male",
+      "name": "William Mooney",
+      "weightClass": 96,
+      "total": 384.32
+    },
+    {
+      "gender": "female",
+      "name": "Maryanne Wagner",
+      "weightClass": 59,
+      "total": 293.16
+    },
+    {
+      "gender": "male",
+      "name": "Mcintosh Hart",
+      "weightClass": 96,
+      "total": 378.37
+    },
+    {
+      "gender": "female",
+      "name": "Brenda Morin",
+      "weightClass": 49,
+      "total": 234.08
+    },
+    {
+      "gender": "female",
+      "name": "Rosario Parker",
+      "weightClass": 59,
+      "total": 252.61
+    },
+    {
+      "gender": "female",
+      "name": "Sue Jacobson",
+      "weightClass": 64,
+      "total": 325.22
+    },
+    {
+      "gender": "male",
+      "name": "Pugh Richard",
+      "weightClass": 96,
+      "total": 386.23
+    },
+    {
+      "gender": "female",
+      "name": "Teresa Maynard",
+      "weightClass": 71,
+      "total": 367.07
+    },
+    {
+      "gender": "male",
+      "name": "Jones Santana",
+      "weightClass": 81,
+      "total": 332.05
+    },
+    {
+      "gender": "male",
+      "name": "Mcpherson Lancaster",
+      "weightClass": 102,
+      "total": 364.48
+    },
+    {
+      "gender": "female",
+      "name": "Tabitha Reilly",
+      "weightClass": 49,
+      "total": 209.32
+    },
+    {
+      "gender": "female",
+      "name": "Sheri Merritt",
+      "weightClass": 64,
+      "total": 331.13
+    },
+    {
+      "gender": "female",
+      "name": "Elisa Hardin",
+      "weightClass": 55,
+      "total": 259.39
+    },
+    {
+      "gender": "female",
+      "name": "Elisabeth Frazier",
+      "weightClass": 76,
+      "total": 335.68
+    },
+    {
+      "gender": "male",
+      "name": "Faulkner Frost",
+      "weightClass": 55,
+      "total": 233.68
+    },
+    {
+      "gender": "female",
+      "name": "April Robertson",
+      "weightClass": 71,
+      "total": 357.56
+    },
+    {
+      "gender": "male",
+      "name": "Benjamin Holden",
+      "weightClass": 73,
+      "total": 283.65
+    },
+    {
+      "gender": "male",
+      "name": "Solomon Parrish",
+      "weightClass": 55,
+      "total": 214.55
+    },
+    {
+      "gender": "female",
+      "name": "Matilda Day",
+      "weightClass": 55,
+      "total": 287.45
+    },
+    {
+      "gender": "female",
+      "name": "Deborah Carroll",
+      "weightClass": 87,
+      "total": 394.03
+    },
+    {
+      "gender": "male",
+      "name": "Kim Baird",
+      "weightClass": 102,
+      "total": 346.86
+    },
+    {
+      "gender": "male",
+      "name": "Vasquez Crane",
+      "weightClass": 67,
+      "total": 222.09
+    },
+    {
+      "gender": "male",
+      "name": "Crane Norris",
+      "weightClass": 67,
+      "total": 228.98
+    },
+    {
+      "gender": "female",
+      "name": "Valarie Fulton",
+      "weightClass": 64,
+      "total": 315.53
+    }
+  ]
+}

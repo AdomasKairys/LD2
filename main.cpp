@@ -1,5 +1,6 @@
 #include <iostream>
 #include <mpi.h>
+
 const int ROOT_PROCCESS = 0;
 const int DATA_PROCCESS = 1;
 const int RESULT_PROCCESS = 2;
