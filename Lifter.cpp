@@ -1,7 +1,9 @@
 #include "Lifter.h"
+#include "json.hpp"
 #include "SHA256.h"
 
 using namespace std;
+using namespace nlohmann;
 
 Lifter::Lifter()
 {
@@ -18,12 +20,29 @@ Lifter::Lifter(string name, int weightClass, double total)
 	this->total = total;
 	this->hash = "";
 }
+string Lifter::to_json()
+{
+	json j;
+	j["name"] = name;
+	j["weightClass"] = weightClass;
+	j["total"] = total;
+	j["hash"] = hash;
+	return j.dump();
+}
+Lifter Lifter::from_json(std::string json)
+{
+	auto lifterJson = json::parse(json);
+	this->name = lifterJson["name"].get<string>();
+	this->weightClass = lifterJson["weightClass"].get<int>();
+	this->total = lifterJson["total"].get<double>();
+	this->hash = lifterJson["hash"].get<string>();
+	return *this;
+}
 
 //https://github.com/System-Glitch/SHA256
-void Lifter::generateHash()
+void Lifter::generate_hash()
 {
-    string str = name + to_string(weightClass) + to_string(total);
-
+	string str = name + to_string(weightClass) + to_string(total);
 	SHA256 sha;
 	sha.update(str);
 	uint8_t* digest = sha.digest();
@@ -32,4 +51,6 @@ void Lifter::generateHash()
 
 	delete[] digest;
 }
+
+
 

@@ -1,14 +1,13 @@
-#include <iostream>
+#include <iostream> 
+#include <vector>
 #include <mpi.h>
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 #include "Lifter.h"
 #include "json.hpp"
-#include "SHA256.h"
 
-using json = nlohmann::json; 
+using namespace nlohmann; 
 using namespace std;
 
 const size_t DATA_ARRAY_SIZE = 10;
@@ -16,36 +15,39 @@ const size_t ROOT_PROCESS = 0;
 const size_t DATA_PROCESS = 1;
 const size_t RESULT_PROCESS = 2;
 const size_t TAG_DATA = 0;
-const size_t TAG_REQUEST = 1;
-const size_t TAG_DATA_REMAINING = 2;
+const size_t TAG_DATA_AMMOUNT = 1;
+const size_t TAG_STATUS = 2;
+const size_t TAG_STATUS_TOTAL = 3;
+const size_t TAG_REQUEST = 4;
 
 vector<Lifter> read_lifters_from_file(const string& filePath);
-string generateHash(string stringField, int intField, double doubleField);
+void sortedAdd(vector<Lifter> *lifters, Lifter lifter);
 
 vector<Lifter> read_lifters_from_file(const string& file_path) {
     vector<Lifter> Lifters;
     ifstream stream(file_path);
     json all_lifters_json = json::parse(stream);
     auto all_lifters = all_lifters_json["wlifter"];
-
+    
     for (const json& new_Lifter : all_lifters) 
         Lifters.push_back({ new_Lifter["name"],new_Lifter["weightClass"],new_Lifter["total"]});
     
     return Lifters;
 }
-//https://github.com/System-Glitch/SHA256
-string generateHash(string str)
+
+void sortedAdd(vector<Lifter> *lifters, Lifter lifter)
 {
-	SHA256 sha;
-	sha.update(str);
-	uint8_t* digest = sha.digest();
-
-	string hash = SHA256::toString(digest).substr(0,10);
-
-	delete[] digest;
-
-    return hash;
+    lifters->push_back(lifter);
+    for (size_t i = lifters->size() - 1; i >= 1; i--) {
+        if (((*lifters)[i].weightClass < (*lifters)[i - 1].weightClass) || 
+            (((*lifters)[i].weightClass == (*lifters)[i - 1].weightClass) && (*lifters)[i].total < (*lifters)[i - 1].total)) {
+            break;
+        }
+        swap((*lifters)[i], (*lifters)[i - 1]);
+    }
 }
+
+
 int main(){
 
     MPI::Init();
@@ -64,76 +66,149 @@ int main(){
     {
         case ROOT_PROCESS:
         {
-            vector<Lifter> lifters = read_lifters_from_file("IF11_KairysA_LD1_dat2.json");
+            vector<Lifter> lifters = read_lifters_from_file("IF11_KairysA_LD1_dat3.json");
             size_t N = lifters.size();  
             for(size_t i = 0; i < N; i++)
             {
-                string data = lifters[i].name + to_string(lifters[i].weightClass) + to_string(lifters[i].total);
+                string data = lifters[i].to_json();
                 MPI::COMM_WORLD.Send(data.c_str(), data.size(), MPI_CHAR, DATA_PROCESS, TAG_DATA);
-                size_t remaining = N-1-i;
-                MPI::COMM_WORLD.Send(&remaining, 1, MPI_INT, DATA_PROCESS, TAG_DATA_REMAINING);
+                int remaining = N-1-i;
+                MPI::COMM_WORLD.Send(&remaining, 1, MPI_INT, DATA_PROCESS, TAG_DATA_AMMOUNT);
             }
+            int incomingDataSize;
+            MPI::COMM_WORLD.Recv(&incomingDataSize, 1, MPI_INT, RESULT_PROCESS, TAG_DATA_AMMOUNT);
+            for(size_t i = 0; i < incomingDataSize; i++)
+            {
+                MPI::Status status;
+                MPI::COMM_WORLD.Probe(RESULT_PROCESS, TAG_DATA, status);
+                char buffer[status.Get_count(MPI_CHAR)];
+                MPI::COMM_WORLD.Recv(buffer, status.Get_count(MPI_CHAR), MPI_CHAR, RESULT_PROCESS, TAG_DATA);
+                string results(buffer, status.Get_count(MPI_CHAR));
+                cout<<results<<endl;   
+            }
+            cout<<incomingDataSize<<endl;
             break;
         }
         case DATA_PROCESS:
         {
             string processArray[DATA_ARRAY_SIZE];
-            bool isFinished = false;
-            bool isArrayEmpty = true;
-            while (!isFinished || !isArrayEmpty)
+            size_t index = 0;
+            int remaining = 10; // can be any arbitrary number greater than 0
+            while ((remaining + index) > 0)
             {
-                for(size_t i = 0; i<sizeof(processArray); i++)
+                if(index < DATA_ARRAY_SIZE && remaining > 0)
                 {
-                    if(processArray[i] != "")
-                        continue;
-                    
                     MPI::Status status;
                     MPI::COMM_WORLD.Probe(ROOT_PROCESS, TAG_DATA, status);
 
                     char buffer[status.Get_count(MPI_CHAR)];
-                    MPI::COMM_WORLD.Recv(&buffer, sizeof(buffer), MPI_CHAR, status.Get_source(), status.Get_tag());
-
-                    string data(buffer);
-
-                    processArray[i] = data;
+                    MPI::COMM_WORLD.Recv(buffer, status.Get_count(MPI_CHAR), MPI_CHAR, status.Get_source(), status.Get_tag());
+                    string data(buffer, status.Get_count(MPI_CHAR));
+                    processArray[index++] = data;
+                    MPI::COMM_WORLD.Recv(&remaining, 1, MPI_INT, ROOT_PROCESS, TAG_DATA_AMMOUNT);
                 }
 
                 MPI::Status status;
                 MPI::COMM_WORLD.Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, TAG_REQUEST, status);
 
-                size_t remaining;
-                MPI::COMM_WORLD.Recv(&remaining, 1, MPI_INT, DATA_PROCESS, TAG_DATA_REMAINING);
-                isFinished = remaining == 0;
+                bool isNotEmpty = index != 0; //0 means no more data currently, 1 mean data is available
 
-                size_t index = 0;
-                isArrayEmpty = true;
-
-                for(size_t i = 0; i<sizeof(processArray); i++)
+                MPI::COMM_WORLD.Send(&isNotEmpty, 1, MPI_CXX_BOOL, status.Get_source(), TAG_STATUS);
+                if(isNotEmpty)
                 {
-                    if(processArray[i] == "")
-                        continue;
-                    isArrayEmpty = false;
-                    index = i;
-                    break;
+                    const char* data = processArray[--index].c_str();
+                    MPI::COMM_WORLD.Send(data, strlen(data), MPI_CHAR, status.Get_source(), TAG_DATA);
                 }
-                int response = isArrayEmpty && isFinished ? -1 : (isArrayEmpty ? 0 : 1); // -1 means finished and no more data, 0 means no more data currently, 1 mean data is available
-
-
-                MPI::COMM_WORLD.Send(&response, 1, MPI_INT, status.Get_source(), status.Get_tag());
-
-                if(response == 1)
-                {
-                    const char* data = processArray[index].c_str();
-                    MPI::COMM_WORLD.Send(data, strlen(data), MPI_CHAR, status.Get_source(), status.Get_tag());
-                }
-
+                
+                isNotEmpty = (index + remaining) >= (totalProcesses - 3); //checks if worker should continue to wait for data
+                MPI::COMM_WORLD.Send(&isNotEmpty, 1, MPI_CXX_BOOL, status.Get_source(), TAG_STATUS_TOTAL);
             }
+            break;
         }
-            break;
         case RESULT_PROCESS:
+        {
+            size_t workingProc = totalProcesses - 3;
+            vector<Lifter> outputLifters;
+            while(workingProc > 0){
+                bool isNotEmpty;
+                MPI::Status status;
+                MPI::COMM_WORLD.Probe(MPI_ANY_SOURCE, TAG_STATUS , status);
+                MPI::COMM_WORLD.Recv(&isNotEmpty, 1 , MPI_CXX_BOOL, status.Get_source(), TAG_STATUS);
+
+                if(isNotEmpty)
+                {
+                    MPI::COMM_WORLD.Probe(MPI_ANY_SOURCE, TAG_DATA , status);
+                    char buffer[status.Get_count(MPI_CHAR)];
+                    MPI::COMM_WORLD.Recv(buffer, status.Get_count(MPI_CHAR), MPI_CHAR, status.Get_source(), status.Get_tag());
+                    string result(buffer, status.Get_count(MPI_CHAR));
+                    Lifter lifter;
+                    lifter.from_json(result);
+                    sortedAdd(&outputLifters, lifter);
+                }
+                MPI::COMM_WORLD.Probe(MPI_ANY_SOURCE, TAG_STATUS_TOTAL, status);
+                MPI::COMM_WORLD.Recv(&isNotEmpty, 1, MPI_CXX_BOOL, status.Get_source(), TAG_STATUS_TOTAL);
+                if(!isNotEmpty)
+                {
+                    workingProc--;
+                    continue;
+                }
+            }
+            int dataSize = outputLifters.size();
+            MPI::COMM_WORLD.Send(&dataSize, 1, MPI_INT, ROOT_PROCESS, TAG_DATA_AMMOUNT);
+            if(outputLifters.empty())
+                break;
+            
+            for(auto lifter : outputLifters)
+            {
+                string returnVal = lifter.to_json();
+                MPI::COMM_WORLD.Send(returnVal.c_str(), returnVal.size(), MPI_CHAR, ROOT_PROCESS, TAG_DATA);
+            }
+
             break;
+        }
         default: //worker proccess
+        {
+            while(true)
+            {
+                bool isNotEmpty;
+                MPI::COMM_WORLD.Send(NULL, 0, MPI_INT, DATA_PROCESS, TAG_REQUEST);
+                MPI::COMM_WORLD.Recv(&isNotEmpty, 1, MPI_CXX_BOOL, DATA_PROCESS, TAG_STATUS);
+                if(isNotEmpty)
+                {
+                    MPI::Status status;
+                    MPI::COMM_WORLD.Probe(DATA_PROCESS, TAG_DATA , status);
+                    char buffer[status.Get_count(MPI_CHAR)];
+                    MPI::COMM_WORLD.Recv(buffer, status.Get_count(MPI_CHAR), MPI_CHAR, status.Get_source(), status.Get_tag());
+                    string data(buffer, status.Get_count(MPI_CHAR));
+                    Lifter lifter;
+                    lifter.from_json(data);
+                    lifter.generate_hash();
+                    
+                    if(!isdigit(lifter.hash[0]))
+                    {
+                        MPI::COMM_WORLD.Send(&isNotEmpty, 1, MPI_CXX_BOOL, RESULT_PROCESS, TAG_STATUS);
+                        string result = lifter.to_json();
+                        MPI::COMM_WORLD.Send(result.c_str(), result.size(), MPI_CHAR, RESULT_PROCESS, TAG_DATA);
+                    }
+                    else
+                    {
+                        isNotEmpty = false;
+                        MPI::COMM_WORLD.Send(&isNotEmpty, 1, MPI_CXX_BOOL, RESULT_PROCESS, TAG_STATUS);
+                    }
+                }
+                else
+                {
+                    MPI::COMM_WORLD.Send(&isNotEmpty, 1, MPI_CXX_BOOL, RESULT_PROCESS, TAG_STATUS);
+                }
+                
+                
+                MPI::COMM_WORLD.Recv(&isNotEmpty, 1, MPI_CXX_BOOL, DATA_PROCESS, TAG_STATUS_TOTAL);
+                MPI::COMM_WORLD.Send(&isNotEmpty, 1 , MPI_CXX_BOOL, RESULT_PROCESS, TAG_STATUS_TOTAL);
+                if(!isNotEmpty)
+                    break;
+            }
             break;
+        }
     }
     MPI::Finalize();
     return 0;
