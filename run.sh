@@ -5,4 +5,4 @@ if ! [[ $# -eq 1 ]] || [[ $# -gt 0 && ! $1 =~ $re ]]; then
     exit
 fi
 mpic++ main.cpp Lifter.cpp SHA256.cpp
-mpirun -np $1 ./a.out
+mpirun --oversubscribe -np $1 ./a.out
