@@ -114,16 +114,16 @@ int main(){
                 MPI::COMM_WORLD.Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, TAG_REQUEST, status);
 
                 bool isNotEmpty = index != 0; //0 means no more data currently, 1 mean data is available
-
                 MPI::COMM_WORLD.Send(&isNotEmpty, 1, MPI_CXX_BOOL, status.Get_source(), TAG_STATUS);
+                bool isFinished = (isNotEmpty && (index + remaining - 1) >= (totalProcesses - 3)) || (!isNotEmpty && (index + remaining) >= (totalProcesses - 3)) ; //checks if worker should continue to wait for data
+                MPI::COMM_WORLD.Send(&isFinished, 1, MPI_CXX_BOOL, status.Get_source(), TAG_STATUS_TOTAL);
+
                 if(isNotEmpty)
                 {
                     const char* data = processArray[--index].c_str();
                     MPI::COMM_WORLD.Send(data, strlen(data), MPI_CHAR, status.Get_source(), TAG_DATA);
                 }
                 
-                isNotEmpty = (index + remaining) >= (totalProcesses - 3); //checks if worker should continue to wait for data
-                MPI::COMM_WORLD.Send(&isNotEmpty, 1, MPI_CXX_BOOL, status.Get_source(), TAG_STATUS_TOTAL);
             }
             break;
         }
@@ -173,8 +173,10 @@ int main(){
             while(true)
             {
                 bool isNotEmpty;
+                bool isFinished;
                 MPI::COMM_WORLD.Send(NULL, 0, MPI_INT, DATA_PROCESS, TAG_REQUEST);
                 MPI::COMM_WORLD.Recv(&isNotEmpty, 1, MPI_CXX_BOOL, DATA_PROCESS, TAG_STATUS);
+                MPI::COMM_WORLD.Recv(&isFinished, 1, MPI_CXX_BOOL, DATA_PROCESS, TAG_STATUS_TOTAL);
                 if(isNotEmpty)
                 {
                     MPI::Status status;
@@ -204,9 +206,9 @@ int main(){
                 }
                 
                 
-                MPI::COMM_WORLD.Recv(&isNotEmpty, 1, MPI_CXX_BOOL, DATA_PROCESS, TAG_STATUS_TOTAL);
-                MPI::COMM_WORLD.Send(&isNotEmpty, 1 , MPI_CXX_BOOL, RESULT_PROCESS, TAG_STATUS_TOTAL);
-                if(!isNotEmpty)
+                
+                MPI::COMM_WORLD.Send(&isFinished, 1 , MPI_CXX_BOOL, RESULT_PROCESS, TAG_STATUS_TOTAL);
+                if(!isFinished)
                     break;
             }
             break;
