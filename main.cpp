@@ -102,28 +102,26 @@ int main(){
                 {
                     MPI::Status status;
                     MPI::COMM_WORLD.Probe(ROOT_PROCESS, TAG_DATA, status);
-
                     char buffer[status.Get_count(MPI_CHAR)];
                     MPI::COMM_WORLD.Recv(buffer, status.Get_count(MPI_CHAR), MPI_CHAR, status.Get_source(), status.Get_tag());
                     std::string data(buffer, status.Get_count(MPI_CHAR));
                     processArray[index++] = data;
                     MPI::COMM_WORLD.Recv(&remaining, 1, MPI_INT, ROOT_PROCESS, TAG_DATA_AMMOUNT);
                 }
-
                 MPI::Status status;
-                MPI::COMM_WORLD.Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, TAG_REQUEST, status);
-
-                bool isNotEmpty = index != 0; //0 means no more data currently, 1 mean data is available
-                MPI::COMM_WORLD.Send(&isNotEmpty, 1, MPI_CXX_BOOL, status.Get_source(), TAG_STATUS);
-                bool isFinished = (isNotEmpty && (index + remaining - 1) >= (totalProcesses - 3)) || (!isNotEmpty && (index + remaining) >= (totalProcesses - 3)) ; //checks if worker should continue to wait for data
-                MPI::COMM_WORLD.Send(&isFinished, 1, MPI_CXX_BOOL, status.Get_source(), TAG_STATUS_TOTAL);
-
-                if(isNotEmpty)
-                {
-                    const char* data = processArray[--index].c_str();
-                    MPI::COMM_WORLD.Send(data, strlen(data), MPI_CHAR, status.Get_source(), TAG_DATA);
+                bool isRequested = MPI::COMM_WORLD.Iprobe(MPI_ANY_SOURCE, TAG_REQUEST, status);
+                if(isRequested){
+                    MPI::COMM_WORLD.Recv(NULL, 0, MPI_INT, status.Get_source(), TAG_REQUEST);
+                    bool isNotEmpty = index != 0; //0 means no more data currently, 1 mean data is available
+                    MPI::COMM_WORLD.Send(&isNotEmpty, 1, MPI_CXX_BOOL, status.Get_source(), TAG_STATUS);
+                    bool isFinished = (isNotEmpty && (index + remaining - 1) >= (totalProcesses - 3)) || (!isNotEmpty && (index + remaining) >= (totalProcesses - 3)) ; //checks if worker should continue to wait for data
+                    MPI::COMM_WORLD.Send(&isFinished, 1, MPI_CXX_BOOL, status.Get_source(), TAG_STATUS_TOTAL);
+                    if(isNotEmpty)
+                    {
+                        const char* data = processArray[--index].c_str();
+                        MPI::COMM_WORLD.Send(data, strlen(data), MPI_CHAR, status.Get_source(), TAG_DATA);
+                    }
                 }
-                
             }
             break;
         }
