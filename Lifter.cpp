@@ -43,6 +43,7 @@ Lifter Lifter::from_json(std::string json)
 void Lifter::generate_hash()
 {
 	string str = name + to_string(weightClass) + to_string(total);
+	cout << str << endl;
 	SHA256 sha;
 	sha.update(str);
 	uint8_t* digest = sha.digest();
